@@ -4,7 +4,7 @@ from generate_sheet import *
 if __name__ ==  "__main__":
 
     sheet_info = {
-        "name": "Jaime Selwyn",
+        "name": "John Doe",
         "grade": 6,
         "topics": {"multiplication": 1,
                    "division": 5,
