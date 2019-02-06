@@ -1,10 +1,13 @@
-import numpy as np
-import matplotlib as mpl
-from pylatex import Document, Section, Head, Foot, PageStyle, NoEscape, Command, Package, Subsection
-import random
-import os
+from pylatex import Document, Package, Center
 
-def basic_formatting(doc, info, answers):
+# Import class files for different question types
+from basic_operations import *
+
+
+def basic_formatting(info, answers):
+    geometry_options = {"margin": "1in"}
+    doc = Document(geometry_options=geometry_options)
+
     # Basic templating common to both question and answer sheets
     # Import packages
     doc.packages.append(Package("fancyhdr"))
@@ -13,6 +16,9 @@ def basic_formatting(doc, info, answers):
     doc.packages.append(Package("microtype"))
     doc.packages.append(Package("multicol"))
     doc.packages.append(Package("xlop"))
+    doc.packages.append(Package("enumitem"))
+    doc.packages.append(Package("sectsty"))
+    doc.append(NoEscape('\opset{voperation=top}'))
 
     # Define the document's title
     doc_title = "Grade %d Worksheet" % info["grade"]
@@ -25,137 +31,57 @@ def basic_formatting(doc, info, answers):
     doc.append(NoEscape(r'\chead{%s}' % doc_title))
     doc.append(NoEscape(r'\rhead{\today}'))
 
+    # Used for questions using xlop to mask the final answer
     doc.append(NoEscape(r'\newcommand{\gobble}[1]{}'))
+
+    # Reduce section font size to size of subsection font
+    doc.append(NoEscape(r"\sectionfont{\fontsize{12}{15}\selectfont}"))
 
     return doc
 
 
-
-# Some basic code for making a LaTeX doc with pylatex
+# Primary entry point into system
 def generate_sheet(info):
-    geometry_options = {"margin": "1in"}
-
     # Question sheet
-    # Prepare doc variable and insert templating
+    # Prepare document name and insert templating
     questions_filename = info["name"] + "-questions"
-    questions = Document(geometry_options=geometry_options)
-    questions = basic_formatting(questions, info, False)
+    questions = basic_formatting(info=info, answers=False)
 
-    # A sample section and some text
-    question_1 = Multiply(6)
-    question_2 = Divide(6)
+    # Extract all of the requested topics and construct
+    # objects with the specified number of questions
+    topic_list = []
+    for object_type, param in info["topics"]:
+        topic_list.append(object_type(param))
 
-    question_1.insert_question(questions)
-    question_2.insert_question(questions)
+    # Create a title blurb with list of topics on sheet
+    topic_str = ''
+    for topic in topic_list:
+        if str(topic) != str(topic_list[-1]):
+            topic_str = topic_str + str(topic) + ", "
+        else:
+            topic_str = topic_str[:-2] + " and " + str(topic).lower()
 
+    # Insert it, centred an in italics
+    questions.append(NoEscape(r"\begin{center} \textit{%s} \end{center}" % topic_str))
 
-    # Generate pdf
+    # Insert question LaTeX code
+    for topic in topic_list:
+        topic.insert_question(questions)
+
+    # Generate pdf of question sheet
     questions.generate_pdf(questions_filename, clean_tex=False)
 
     # Answers sheet
-    # Prepare doc variable and insert templating
-    answers_filename = info["name"] +  "-answers"
-    answers = Document(geometry_options=geometry_options)
-    answers = basic_formatting(answers, info, True)
+    # Prepare document name and insert templating
+    answers_filename = info["name"] + "-answers"
+    answers = basic_formatting(info=info, answers=True)
 
-    # Sample tex code
-    # with answers.create(Section("The simple stuff")):
-    #     answers.append('Some regular text')
-    question_1.insert_answer(answers)
-    question_2.insert_answer(answers)
-    # question_2.insert_answer(answers)
+    # Insert answer LaTeX code
+    for topic in topic_list:
+        topic.insert_answer(answers)
 
     # Generate pdf
     answers.generate_pdf(answers_filename, clean_tex=False)
 
 
-def rparam(a, b, p):
-    # Return a random number between a and b, with p decimal places of precision
-    return round(a + (b-a)*random.random(), p)
-
-
-class Multiply:
-    # Grade 6 long multiplication
-    a = []
-    b = []
-
-    def leading_text(self):
-        return "Calculate the following multiplications:"
-
-    def __str__(self):
-        return "Multiplication"
-
-    def __init__(self, n):
-        for i in range (0, n):
-            # Generate n multiplication problems
-            self.a.append(rparam(11, 49, 0))  # first number to multiply between 11 and 49
-            self.b.append(rparam(50, 500, 0))  # second number to multiply between 50 and 50000
-
-    def insert_question(self, doc):
-        with doc.create(Subsection(str(self), numbering=False)):
-            doc.append(self.leading_text())
-
-            doc.append(NoEscape(r'\begin{multicols}{3}'))
-            doc.append(NoEscape(r'\begin{enumerate}'))
-            for i in range(0, len(self.a)):
-                doc.append(NoEscape(r'\item \opmul[displayintermediary=None, resultstyle=\gobble]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
-            return doc
-
-    def insert_answer(self, doc):
-        with doc.create(Subsection(str(self), numbering=False)):
-
-            doc.append(NoEscape(r'\begin{multicols}{3}'))
-            doc.append(NoEscape(r'\begin{enumerate}'))
-            for i in range(0, len(self.a)):
-                doc.append(NoEscape('\item \opmul[style=display, displayintermediary=all]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
-            return doc
-
-
-class Divide:
-
-    # Grade 6 long division
-    # Multiply a and b
-
-    def leading_text(self):
-        return "Calculate the following divisions:"
-
-    def __str__(self):
-        return "Division"
-
-    a = []
-    b = []
-
-    # Construct question object
-    def __init__(self, n):
-        for i in range(0, n):
-            answer = rparam(1, 50, 1)
-            self.b.append(rparam(1, 20, 0))   # first number to multiply between 11 and 49
-            self.a.append(self.b[i] * answer)  # second number to multiply between 50 and 50000
-
-    def insert_question(self, doc):
-        with doc.create(Subsection(str(self), numbering=False)):
-            doc.append(self.leading_text())
-
-            doc.append(NoEscape(r'\begin{multicols}{3}'))
-            doc.append(NoEscape(r'\begin{enumerate}'))
-            for i in range(0, len(self.a)):
-                doc.append(NoEscape(r'\item \opdiv[remainderstyle=\gobble, resultstyle=\gobble]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
-            return doc
-
-    def insert_answer(self, doc):
-        with doc.create(Subsection(str(self), numbering=False)):
-
-            doc.append(NoEscape(r'\begin{multicols}{3}'))
-            doc.append(NoEscape(r'\begin{enumerate}'))
-            for i in range(0, len(self.a)):
-                doc.append(NoEscape('\item \opdiv[style=display, displayintermediary=all]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
-            return doc
 
