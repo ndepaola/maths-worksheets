@@ -2,7 +2,7 @@ from pylatex import Document, Package, Center
 
 # Import class files for different question types
 from basic_operations import *
-from basic_fractions import *
+# from basic_fractions import *
 
 
 def basic_formatting(info, answers):

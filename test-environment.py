@@ -11,8 +11,7 @@ if __name__ ==  "__main__":
                    (Divide, 8),
                    (FractionAdd, 8),
                    (FractionSubtract, 8),
-                   #"fractions-add": 2,
-                   #"fractions-multiply": 1,
+                   (FractionMultiply, 8)
                    ]
     }
 
