@@ -9,7 +9,7 @@ def rparam(a, b, p):
 
 
 """ Sample class
-Class <Topic>:
+class <Topic>:
 
     @staticmethod
     def leading_text():

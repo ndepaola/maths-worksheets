@@ -2,6 +2,7 @@ from pylatex import Document, Package, Center
 
 # Import class files for different question types
 from basic_operations import *
+from basic_fractions import *
 
 
 def basic_formatting(info, answers):
@@ -57,7 +58,10 @@ def generate_sheet(info):
     topic_str = ''
     for topic in topic_list:
         if str(topic) != str(topic_list[-1]):
-            topic_str = topic_str + str(topic) + ", "
+            if str(topic) != str(topic_list[0]):
+                topic_str = topic_str + str(topic).lower() + ", "
+            else:
+                topic_str = topic_str + str(topic) + ", "
         else:
             topic_str = topic_str[:-2] + " and " + str(topic).lower()
 

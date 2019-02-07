@@ -5,10 +5,12 @@ from generate_sheet import *
 if __name__ ==  "__main__":
 
     sheet_info = {
-        "name": "John Doe",
+        "name": "Jaime Selwyn",
         "grade": 6,
         "topics": [(Multiply, 8),
-                   (Divide, 6),
+                   (Divide, 8),
+                   (FractionAdd, 8),
+                   (FractionSubtract, 8),
                    #"fractions-add": 2,
                    #"fractions-multiply": 1,
                    ]
