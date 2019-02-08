@@ -16,6 +16,11 @@ class <Topic>:
     def leading_text():
         # Text to attach to the front of the question. "Solve this"
         return "Solve me"
+        
+    @staticmethod
+    def default_num:
+        # Default number of this question to include in a worksheet.
+        return 8
 
     def __str__(self):
         # Name of the topic, suitable to print to topic blurb
@@ -45,21 +50,27 @@ class <Topic>:
 
 class Multiply:
     # Long multiplication
-    a = []
-    b = []
+    a, b = ([], [])
 
     @staticmethod
     def leading_text():
         return "Calculate the following multiplications:"
 
+    @staticmethod
+    def default_num():
+        return 8
+
     def __str__(self):
         return "Multiplication"
 
     def __init__(self, n):
+        a, b = ([], [])
         for i in range (0, n):
             # Generate n multiplication problems
-            self.a.append(rparam(11, 49, 0))  # first number to multiply between 11 and 49
-            self.b.append(rparam(50, 500, 0))  # second number to multiply between 50 and 50000
+            a.append(rparam(11, 49, 0))  # first number to multiply between 11 and 49
+            b.append(rparam(50, 500, 0))  # second number to multiply between 50 and 50000
+        self.a = a
+        self.b = b
 
     def insert_question(self, doc):
         with doc.create(Section(str(self))):
@@ -98,20 +109,25 @@ class Divide:
     def leading_text():
         return "Calculate the following divisions:"
 
+    @staticmethod
+    def default_num():
+        return 8
+
     # Return the type of problem as a string
     def __str__(self):
         return "Division"
 
     # Class variables - list of numbers to divide
-    a = []
-    b = []
+    a, b = ([], [])
 
     # Construct question object
     def __init__(self, n):
+        a, b = ([], [])
         for i in range(0, n):
             answer = rparam(1, 50, 1)
-            self.b.append(rparam(1, 20, 0))   # first number to multiply between 11 and 49
-            self.a.append(self.b[i] * answer)  # second number to multiply between 50 and 50000
+            b.append(rparam(1, 20, 0))   # first number to multiply between 11 and 49
+            a.append(b[i] * answer)  # second number to multiply between 50 and 50000
+        self.a, self.b = (a, b)
 
     # Attach the LaTeX code for this question to the supplied doc
     def insert_question(self, doc):
@@ -143,12 +159,7 @@ class Divide:
 
 
 class FractionAdd:
-    a_num = []
-    a_den = []
-    a = []
-    b_num = []
-    b_den = []
-    b = []
+    a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
 
     @staticmethod
     def leading_text():
@@ -156,6 +167,10 @@ class FractionAdd:
         # return "Solve me"
         return "Add the following fractions together. Write the answer " \
                "as either an improper fraction or a mixed number where possible."
+
+    @staticmethod
+    def default_num():
+        return 8
 
     def __str__(self):
         # Name of the topic, suitable to print to topic blurb
@@ -169,20 +184,35 @@ class FractionAdd:
         # could affect how parameters are generated.
         # I've included a helper function <rparam> here to make it simpler to generate
         # parameters between a certain range and with a specified decimal precision.
+
+        # Be careful to not append directly onto your class variables - create a new
+        # empty list, append onto that, then assign the value of the class variable
+        # to that list instead. Without keeping this in mind, whenever you generate
+        # a sheet, you'll have another 8 (or however many) problems attached on
+
+        a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
+
         for i in range(0, n):
             if random.random() > 1/3:
-                self.a.append(rparam(1, 3, 0))
+                a.append(rparam(1, 3, 0))
             else:
-                self.a.append(0)
+                a.append(0)
             if random.random() > 1/2:
-                self.b.append(rparam(1, 5, 0))
+                b.append(rparam(1, 5, 0))
             else:
-                self.b.append(0)
+                b.append(0)
 
-            self.a_num.append(rparam(1, 10, 0))
-            self.a_den.append(rparam(1, 15, 0))
-            self.b_num.append(rparam(1, 10, 0))
-            self.b_den.append(rparam(1, 15, 0))
+            a_num.append(rparam(1, 10, 0))
+            a_den.append(rparam(1, 15, 0))
+            b_num.append(rparam(1, 10, 0))
+            b_den.append(rparam(1, 15, 0))
+
+        self.a = a
+        self.a_num = a_num
+        self.a_den = a_den
+        self.b = a
+        self.b_num = b_num
+        self.b_den = b_den
 
     def insert_question(self, doc):
         with doc.create(Section(str(self))):
@@ -260,12 +290,7 @@ class FractionAdd:
 
 
 class FractionSubtract:
-    a_num = []
-    a_den = []
-    a = []
-    b_num = []
-    b_den = []
-    b = []
+    a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
 
     @staticmethod
     def leading_text():
@@ -274,11 +299,17 @@ class FractionSubtract:
         return "Subtract the following fractions. Write the answer " \
                "as either an improper fraction or a mixed number where possible."
 
+    @staticmethod
+    def default_num():
+        return 8
+
     def __str__(self):
         # Name of the topic, suitable to print to topic blurb
         return "Subtracting fractions"
 
     def __init__(self, n):
+        a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
+
         # Create randomly generated parameters and store them as class variables
         # Parameters should be n-element lists, where n is the number of questions
         # you want to generate of this type.
@@ -287,32 +318,40 @@ class FractionSubtract:
         # I've included a helper function <rparam> here to make it simpler to generate
         # parameters between a certain range and with a specified decimal precision.
         for i in range(0, n):
+
             # 2/3 chance of not having a number out the front of the 1st term
             if random.random() > 1/3:
-                self.a.append(rparam(1, 3, 0))
+                a.append(rparam(1, 3, 0))
             else:
-                self.a.append(0)
+                a.append(0)
             # 1/2 chance of not having a number out the front of the 2nd term
             if random.random() > 1/2:
-                self.b.append(rparam(1, 5, 0))
+                b.append(rparam(1, 5, 0))
             else:
-                self.b.append(0)
+                b.append(0)
 
             # Generate fraction tops and bottoms
-            self.a_num.append(rparam(1, 10, 0))
-            self.a_den.append(rparam(1, 15, 0))
-            self.b_num.append(rparam(1, 10, 0))
-            self.b_den.append(rparam(1, 15, 0))
+            a_num.append(rparam(1, 10, 0))
+            a_den.append(rparam(1, 15, 0))
+            b_num.append(rparam(1, 10, 0))
+            b_den.append(rparam(1, 15, 0))
 
             # No possibility of negative answers
-            while self.b[i] + self.b_num[i]/self.b_den[i] > \
-                  self.a[i] + self.a_num[i]/self.a_den[i]:
+            while b[i] + b_num[i]/b_den[i] > \
+                  a[i] + a_num[i]/a_den[i]:
                 if random.random() > 1 / 2:
-                    self.b[i] = (rparam(1, 5, 0))
+                    b[i] = (rparam(1, 5, 0))
                 else:
-                    self.b[i] = 0
-                self.b_num[i] = (rparam(1, 10, 0))
-                self.b_den[i] = (rparam(1, 15, 0))
+                    b[i] = 0
+                b_num[i] = (rparam(1, 10, 0))
+                b_den[i] = (rparam(1, 15, 0))
+
+            self.a = a
+            self.a_num = a_num
+            self.a_den = a_den
+            self.b = a
+            self.b_num = b_num
+            self.b_den = b_den
 
     def insert_question(self, doc):
         with doc.create(Section(str(self))):
@@ -388,12 +427,7 @@ class FractionSubtract:
 
 
 class FractionMultiply:
-    a_num = []
-    a_den = []
-    a = []
-    b_num = []
-    b_den = []
-    b = []
+    a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
 
     @staticmethod
     def leading_text():
@@ -401,6 +435,10 @@ class FractionMultiply:
         # return "Solve me"
         return "Multiply the following fractions. Write the answer " \
                "as either an improper fraction or a mixed number where possible."
+
+    @staticmethod
+    def default_num():
+        return 8
 
     def __str__(self):
         # Name of the topic, suitable to print to topic blurb
@@ -414,20 +452,29 @@ class FractionMultiply:
         # could affect how parameters are generated.
         # I've included a helper function <rparam> here to make it simpler to generate
         # parameters between a certain range and with a specified decimal precision.
+        a, a_num, a_den, b, b_num, b_den = ([], [], [], [], [], [])
+
         for i in range(0, n):
             if random.random() > 4/4:
-                self.a.append(rparam(1, 3, 0))
+                a.append(rparam(1, 3, 0))
             else:
-                self.a.append(0)
+                a.append(0)
             if random.random() > 2/3:
-                self.b.append(rparam(1, 5, 0))
+                b.append(rparam(1, 5, 0))
             else:
-                self.b.append(0)
+                b.append(0)
 
-            self.a_num.append(rparam(1, 10, 0))
-            self.a_den.append(rparam(1, 15, 0))
-            self.b_num.append(rparam(1, 10, 0))
-            self.b_den.append(rparam(1, 15, 0))
+            a_num.append(rparam(1, 10, 0))
+            a_den.append(rparam(1, 15, 0))
+            b_num.append(rparam(1, 10, 0))
+            b_den.append(rparam(1, 15, 0))
+
+        self.a = a
+        self.a_num = a_num
+        self.a_den = a_den
+        self.b = a
+        self.b_num = b_num
+        self.b_den = b_den
 
     def insert_question(self, doc):
         with doc.create(Section(str(self))):

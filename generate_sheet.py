@@ -1,8 +1,8 @@
 from pylatex import Document, Package, Center
+import os
 
 # Import class files for different question types
 from basic_operations import *
-# from basic_fractions import *
 
 
 def basic_formatting(info, answers):
@@ -22,7 +22,7 @@ def basic_formatting(info, answers):
     doc.append(NoEscape('\opset{voperation=top}'))
 
     # Define the document's title
-    doc_title = "Grade %d Worksheet" % info["grade"]
+    doc_title = "Grade %s Worksheet" % str(info["grade"])
     if answers:
         doc_title = doc_title + " Answers"
 
@@ -43,6 +43,14 @@ def basic_formatting(info, answers):
 
 # Primary entry point into system
 def generate_sheet(info):
+
+    print(info["topics"])
+
+    # Save files to the student's folder
+    path = './' + info["name"]
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
     # Question sheet
     # Prepare document name and insert templating
     questions_filename = info["name"] + "-questions"
@@ -56,14 +64,19 @@ def generate_sheet(info):
 
     # Create a title blurb with list of topics on sheet
     topic_str = ''
-    for topic in topic_list:
-        if str(topic) != str(topic_list[-1]):
-            if str(topic) != str(topic_list[0]):
-                topic_str = topic_str + str(topic).lower() + ", "
+
+    if len(topic_list) == 1:
+        topic_str = str(topic_list[0])
+
+    else:
+        for topic in topic_list:
+            if str(topic) != str(topic_list[-1]):
+                if str(topic) != str(topic_list[0]):
+                    topic_str = topic_str + str(topic).lower() + ", "
+                else:
+                    topic_str = topic_str + str(topic) + ", "
             else:
-                topic_str = topic_str + str(topic) + ", "
-        else:
-            topic_str = topic_str[:-2] + " and " + str(topic).lower()
+                topic_str = topic_str[:-2] + " and " + str(topic).lower()
 
     # Insert it, centred an in italics
     questions.append(NoEscape(r"\begin{center} \textit{%s} \end{center}" % topic_str))
@@ -73,7 +86,7 @@ def generate_sheet(info):
         topic.insert_question(questions)
 
     # Generate pdf of question sheet
-    questions.generate_pdf(questions_filename, clean_tex=False)
+    questions.generate_pdf(filepath=path+"/"+questions_filename, clean_tex=False)
 
     # Answers sheet
     # Prepare document name and insert templating
@@ -85,7 +98,9 @@ def generate_sheet(info):
         topic.insert_answer(answers)
 
     # Generate pdf
-    answers.generate_pdf(answers_filename, clean_tex=False)
+    answers.generate_pdf(filepath=path+"/"+answers_filename, clean_tex=False)
+
+    return path + "/" + questions_filename + ".pdf", path + "/" + answers_filename + ".pdf"
 
 
 
