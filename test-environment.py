@@ -15,5 +15,5 @@ if __name__ ==  "__main__":
                    ]
     }
 
-    # Primary function to generate pdf's
+    # Primary function to generate PDFs
     generate_sheet(sheet_info)

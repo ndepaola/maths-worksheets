@@ -18,7 +18,7 @@ class <Topic>:
         return "Solve me"
         
     @staticmethod
-    def default_num:
+    def default_num():
         # Default number of this question to include in a worksheet.
         return 8
 
@@ -67,8 +67,8 @@ class Multiply:
         a, b = ([], [])
         for i in range (0, n):
             # Generate n multiplication problems
-            a.append(rparam(11, 49, 0))  # first number to multiply between 11 and 49
-            b.append(rparam(50, 500, 0))  # second number to multiply between 50 and 50000
+            b.append(rparam(11, 49, 0))  # first number to multiply between 11 and 49
+            a.append(rparam(50, 500, 0))  # second number to multiply between 50 and 50000
         self.a = a
         self.b = b
 
@@ -95,11 +95,12 @@ class Multiply:
             for i in range(0, len(self.a)):
                 doc.append(NoEscape('\item \opmul[style=display, '
                                     'displayintermediary=all]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
 
+# TODO: Revise how these questions are presented 
 class Divide:
     # Grade 6 long division
     # Divide b by a
@@ -153,8 +154,8 @@ class Divide:
             for i in range(0, len(self.a)):
                 doc.append(NoEscape('\item \opdiv[style=display, '
                                     'displayintermediary=all]{%f}{%f}\qquad' % (self.a[i], self.b[i])))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
 
@@ -230,8 +231,8 @@ class FractionAdd:
                     frac_string += '%i ' % (self.b[i])
                 frac_string += r'\frac{%i}{%i} $$' % (self.b_num[i], self.b_den[i])
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
     def insert_answer(self, doc):
@@ -284,8 +285,8 @@ class FractionAdd:
                     frac_string += r'%i $$' % final.numerator
 
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
 
@@ -369,8 +370,8 @@ class FractionSubtract:
                     frac_string += '%i ' % (self.b[i])
                 frac_string += r'\frac{%i}{%i} $$' % (self.b_num[i], self.b_den[i])
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
     def insert_answer(self, doc):
@@ -421,8 +422,8 @@ class FractionSubtract:
                     frac_string += r'%i $$' % final.numerator
 
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
 
@@ -492,8 +493,8 @@ class FractionMultiply:
                     frac_string += '%i ' % (self.b[i])
                 frac_string += r'\frac{%i}{%i} $$' % (self.b_num[i], self.b_den[i])
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
 
     def insert_answer(self, doc):
@@ -535,6 +536,6 @@ class FractionMultiply:
                     frac_string += r'%i $$' % final.numerator
 
                 doc.append(NoEscape(frac_string))
-            doc.append(NoEscape('\end{enumerate}'))
-            doc.append(NoEscape('\end{multicols}'))
+            doc.append(NoEscape(r'\end{enumerate}'))
+            doc.append(NoEscape(r'\end{multicols}'))
             return doc
